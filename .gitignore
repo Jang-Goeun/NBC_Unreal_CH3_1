@@ -18,6 +18,10 @@
 # files if adding them here.
 !/Content/**/*.uasset
 !/Content/**/*.umap
+!/Content/**/*.png  
+!/Content/**/*.wav  
+!/Content/**/*.mp3   
+!/Content/**/*.fbx  
 
 # Allow any files from /RawContent dir.
 # Any file in /RawContent dir will be managed by git lfs.
