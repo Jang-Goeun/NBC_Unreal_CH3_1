@@ -27,15 +27,26 @@ protected:
 	// 시작 위치 저장/기준점으로 사용할 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Obstacle|Move")
 	FVector StartLocation;
-	// 이동 속도를 나타내는 변수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Obstacle|Move")
-	float MoveSpeed;
 	// 왕복 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Obstacle|Move")
 	float MaxRange;
+	// 순간이동 주기를 나타내는 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Obstacle|Move")
+	float TeleportTime;
+	// 사라짐/나타남 주기를 나타내는 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Obstacle|Move")
+	float ToggleVisibilityTime;
+
+	// 타이머 핸들 선언
+	FTimerHandle TeleportTimerHandle;
+	FTimerHandle VisibilityTimerHandle;
+
+	// 타이머에 의해 호출될 함수 선언
+	void Teleport();
+	void ToggleVisibility();
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	//virtual void Tick(float DeltaTime) override;
 
 };

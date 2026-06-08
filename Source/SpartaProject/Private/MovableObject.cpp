@@ -7,7 +7,7 @@
 AMovableObject::AMovableObject()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	SetRootComponent(SceneRoot);
@@ -29,49 +29,42 @@ AMovableObject::AMovableObject()
 		StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
 	}
 
-	// 시작 위치
-	StartLocation = GetActorLocation();
-	// 이동 속도
-	MoveSpeed = 100.0f;
 	// 왕복 범위
 	MaxRange = 1000.0f;
+	// 이동 주기
+	TeleportTime = 1.0f;
+	// 나타났다가 사라지는 주기
+	ToggleVisibilityTime = 5.0f;
 }
 
 // Called when the game starts or when spawned
 void AMovableObject::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 시작 위치
+	StartLocation = GetActorLocation();
+
+	// TeleportTime초마다 무작위 위치로 이동
+	GetWorld()->GetTimerManager().SetTimer(TeleportTimerHandle, this, &AMovableObject::Teleport, TeleportTime, true);
+
+	// ToggleVisibilityTime초마다 나타났다가 사라졌다가를 반복함
+	GetWorld()->GetTimerManager().SetTimer(VisibilityTimerHandle, this, &AMovableObject::ToggleVisibility, ToggleVisibilityTime, true);
 }
 
-// Called every frame
-void AMovableObject::Tick(float DeltaTime)
+// 무작위 이동을 위한 함수
+void AMovableObject::Teleport()
 {
-	Super::Tick(DeltaTime);
-
-	// 현재 위치
-	FVector CurrentLocation = GetActorLocation();
-
-	// 위치 이동 계산
-	CurrentLocation.Y += MoveSpeed * DeltaTime;
-
-	// 현재 위치가 범위를 벗어나면 방향 변경
-	float MovedDistance = FMath::Abs(CurrentLocation.Y - StartLocation.Y);
-	if (MovedDistance >= MaxRange)
-	{
-		MoveSpeed *= -1;
-
-		if (CurrentLocation.Y > StartLocation.Y)
-		{
-			CurrentLocation.Y = StartLocation.Y + MaxRange;
-		}
-		else
-		{
-			CurrentLocation.Y = StartLocation.Y - MaxRange;
-		}
-	}
-
-
-	// 새로운 위치 설정
-	SetActorLocation(CurrentLocation);
+	float RandomYOffset = FMath::RandRange(-MaxRange, MaxRange);
+	FVector NewLocation = StartLocation;
+	NewLocation.Y += RandomYOffset;
+	SetActorLocation(NewLocation);
 }
 
+// 나타남/사라짐 함수
+void AMovableObject::ToggleVisibility()
+{
+	bool bIsHidden = IsHidden();
+	SetActorHiddenInGame(!bIsHidden);
+	SetActorEnableCollision(bIsHidden);
+}
