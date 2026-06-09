@@ -45,6 +45,10 @@ protected:
 	void Teleport();
 	void ToggleVisibility();
 
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
 public:
 	// Called every frame
 	//virtual void Tick(float DeltaTime) override;

@@ -28,6 +28,11 @@ AMovableObject::AMovableObject()
 	{
 		StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
 	}
+
+	// 기본값 설정
+	MaxRange = 300.0f;
+	TeleportTime = 1.0f;
+	ToggleVisibilityTime = 5.0f;
 }
 
 // Called when the game starts or when spawned
@@ -35,21 +40,40 @@ void AMovableObject::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 시작 위치
+	// 시작 위치 저장
 	StartLocation = GetActorLocation();
-	// 왕복 범위
-	MaxRange = 1000.0f;
-	// 이동 주기
-	TeleportTime = 1.0f;
-	// 나타났다가 사라지는 주기
-	ToggleVisibilityTime = 5.0f;
 
-	// TeleportTime초마다 무작위 위치로 이동
+	// 타이머 설정
 	GetWorld()->GetTimerManager().SetTimer(TeleportTimerHandle, this, &AMovableObject::Teleport, TeleportTime, true);
-
-	// ToggleVisibilityTime초마다 나타났다가 사라졌다가를 반복함
 	GetWorld()->GetTimerManager().SetTimer(VisibilityTimerHandle, this, &AMovableObject::ToggleVisibility, ToggleVisibilityTime, true);
 }
+
+#if WITH_EDITOR
+void AMovableObject::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	// 에디터에서 TeleportTime을 수정하면 즉시 타이머를 갱신
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AMovableObject, TeleportTime))
+	{
+		if (GetWorld())
+		{
+			GetWorld()->GetTimerManager().SetTimer(TeleportTimerHandle, this, &AMovableObject::Teleport, TeleportTime, true);
+		}
+	}
+
+	// 에디터에서 ToggleVisibilityTime을 수정하면 즉시 타이머를 갱신
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AMovableObject, ToggleVisibilityTime))
+	{
+		if (GetWorld())
+		{
+			GetWorld()->GetTimerManager().SetTimer(VisibilityTimerHandle, this, &AMovableObject::ToggleVisibility, ToggleVisibilityTime, true);
+		}
+	}
+}
+#endif
 
 // 무작위 이동을 위한 함수
 void AMovableObject::Teleport()

@@ -28,15 +28,18 @@ ASpinner::ASpinner()
 	{
 		StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
 	}
+
+	// 기본 속도 설정 (생성자에서 설정해야 에디터 설정값이 유지됨)
+	RotationSpeed = 90.0f;
 }
 
 // Called when the game starts or when spawned
 void ASpinner::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// 회전 속도를 45도 ~ 180도 사이로 랜덤 설정
-	RotationSpeed = FMath::RandRange(45.0f, 180.0f);
+	
+	// 과제 요구사항인 '랜덤 속성 부여'가 필요하다면 여기서 처리할 수 있지만, 
+	// 에디터 수정값을 우선시하기 위해 고정값 할당 코드는 제거합니다.
 }
 
 // Called every frame
