@@ -28,13 +28,6 @@ AMovableObject::AMovableObject()
 	{
 		StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
 	}
-
-	// 왕복 범위
-	MaxRange = 1000.0f;
-	// 이동 주기
-	TeleportTime = 1.0f;
-	// 나타났다가 사라지는 주기
-	ToggleVisibilityTime = 5.0f;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +37,12 @@ void AMovableObject::BeginPlay()
 
 	// 시작 위치
 	StartLocation = GetActorLocation();
+	// 왕복 범위
+	MaxRange = 1000.0f;
+	// 이동 주기
+	TeleportTime = 1.0f;
+	// 나타났다가 사라지는 주기
+	ToggleVisibilityTime = 5.0f;
 
 	// TeleportTime초마다 무작위 위치로 이동
 	GetWorld()->GetTimerManager().SetTimer(TeleportTimerHandle, this, &AMovableObject::Teleport, TeleportTime, true);

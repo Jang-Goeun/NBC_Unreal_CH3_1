@@ -28,9 +28,6 @@ ASpinner::ASpinner()
 	{
 		StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
 	}
-
-	// 회전 속도
-	RotationSpeed = 90.0f;
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +35,8 @@ void ASpinner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 회전 속도를 45도 ~ 180도 사이로 랜덤 설정
+	RotationSpeed = FMath::RandRange(45.0f, 180.0f);
 }
 
 // Called every frame
